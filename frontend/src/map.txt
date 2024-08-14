@@ -1,0 +1,65 @@
+NEXUSAPI
+├── .vscode
+├── backend
+├── frontend
+├── node_modules
+├── public
+├── src
+│   ├── api
+        ├── api.js  
+    ├── components        
+        ├── MenuNavegacaoComp.jsx
+            SidebarComp.jsx
+        ├
+│   ├── context
+        ├── ContextTheme.jsx
+│   ├── layout
+        ├── Layout.jsx
+│   ├── pages
+        ├── AmigosPage.jsx
+        ├── BuscaPage.jsx
+        ├── ConfiguracoesPage.jsx
+        ├── CriarPaginaPage.jsx
+        ├── EmpregosPage.jsx
+        ├── EventosPage.jsx
+        ├── GaleriaFotosPage.jsx
+        ├── GruposPage.jsx
+        ├── Home.jsx
+        ├── LoginPage.jsx
+        ├── MensagensPage.jsx
+        ├── NotificacoesPage.jsx
+        ├── NoticiasPage.jsx
+        ├── PaginaDetalhePage.jsx
+        ├── PaginasPage.jsx
+        ├── PerfilPage.jsx
+        ├── PerfilUsuarioPage.jsx
+        ├── VendasPage.jsx
+        ├── VideoPage.jsx
+        ├── VideoEstudioPage.jsx
+│   ├── routes
+     │   ├── Rotas.jsx
+│   ├── styles
+     │   ├── ColorsPickerComp.jsx      
+         ├── StorieStyle.jsx 
+         ├── NavMenuStyle.jsx 
+       
+                        
+                        
+│   ├── App.css
+│   ├── App.js
+│   ├── App.test.js
+│   ├── index.css
+│   ├── index.js
+│   ├── logo.svg
+│   ├── map.txt
+│   ├── reportWebVitals.js
+│   ├── setupTests.js
+├── .env
+├── .gitignore
+├── package-lock.json
+├── package.json
+├── README.md
+├── .env
+├── .gitattributes
+├── netlify.toml
+└── vercel.json
