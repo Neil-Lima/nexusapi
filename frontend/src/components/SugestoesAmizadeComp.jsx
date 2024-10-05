@@ -1,13 +1,10 @@
 import React from 'react';
 import { Card, Image } from 'react-bootstrap';
 import { StyledCard, FriendItem, AddButton } from '../styles/SugestoesAmizadeStyle';
+import { getSugestoes } from '../utils/SugestoesAmizadeUtil';
 
 function SugestoesAmizadeComp() {
-  const sugestoes = [
-    { id: 1, name: 'João Silva', image: 'https://picsum.photos/50/50?random=1' },
-    { id: 2, name: 'Maria Santos', image: 'https://picsum.photos/50/50?random=2' },
-    { id: 3, name: 'Pedro Oliveira', image: 'https://picsum.photos/50/50?random=3' },
-  ];
+  const sugestoes = getSugestoes();
 
   return (
     <StyledCard>

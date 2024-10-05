@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faUser, faGlobeAmericas, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { SidebarWrapper, StyledCard, IconWrapper, StyledListGroup } from '../styles/SidebarStyle';
+import { SidebarWrapper, StyledCard, IconWrapper, StyledListGroup } from './SidebarStyle';
+import { sidebarItems } from './SidebarUtil';
 import { useTheme } from '../context/ContextTheme';
 
 function SidebarComp({ show }) {
@@ -22,12 +22,7 @@ function SidebarComp({ show }) {
         </Card.Body>
       </StyledCard>
       <StyledListGroup className="mb-4">
-        {[
-          { icon: faHome, text: 'Feed', color: '#FF0080' },
-          { icon: faUser, text: 'Conexões', color: '#7928CA' },
-          { icon: faGlobeAmericas, text: 'Ultimas noticias', color: '#4a00e0' },
-          { icon: faUsers, text: 'Grupos', color: '#8e2de2' }
-        ].map((item, index) => (
+        {sidebarItems.map((item, index) => (
           <ListGroup.Item key={index} className="d-flex align-items-center">
             <IconWrapper theme={theme}>
               <FontAwesomeIcon icon={item.icon} style={{fontSize: '20px', color: '#ffffff'}} />

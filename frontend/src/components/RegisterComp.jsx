@@ -1,27 +1,16 @@
 import React from 'react';
-import {
-  Container,
-  Button,
-  Form,
-  Row,
-  Col
-} from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
+import { StyledForm, StyledButton, FormGroup } from './RegisterStyle';
+import { generateYears, months, generateDays } from './RegisterUtil';
 
 function RegisterComp() {
-  // Gerar um array de anos de 1990 até 2023
-  const anos = Array.from({ length: 2023 - 1990 + 1 }, (_, index) => 1990 + index);
-
-  // Array de meses e dias
-  const meses = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
-  const dias = Array.from({ length: 31 }, (_, index) => index + 1);
+  const years = generateYears();
+  const days = generateDays();
 
   return (
     <Container>
-      <Form>
-        <Form.Group className="mb-3">
+      <StyledForm>
+        <FormGroup>
           <Form.Label>Informações pessoais</Form.Label>
           <Form.Control placeholder="Nome" className="mb-2" />
           <Form.Control placeholder="Sobrenome" className="mb-2" />
@@ -33,15 +22,15 @@ function RegisterComp() {
             <option value="namorando">Namorando</option>
             <option value="casado">Casado</option>
           </Form.Select>
-        </Form.Group>
+        </FormGroup>
 
-        <Form.Group className="mb-3">
+        <FormGroup>
           <Form.Label>Aniversário</Form.Label>
           <Row>
             <Col>
               <Form.Select>
                 <option>Dia</option>
-                {dias.map((dia) => (
+                {days.map((dia) => (
                   <option key={dia} value={dia}>{dia}</option>
                 ))}
               </Form.Select>
@@ -49,7 +38,7 @@ function RegisterComp() {
             <Col>
               <Form.Select>
                 <option>Mês</option>
-                {meses.map((mes, index) => (
+                {months.map((mes, index) => (
                   <option key={index} value={index + 1}>{mes}</option>
                 ))}
               </Form.Select>
@@ -57,24 +46,24 @@ function RegisterComp() {
             <Col>
               <Form.Select>
                 <option>Ano</option>
-                {anos.map((ano) => (
+                {years.map((ano) => (
                   <option key={ano} value={ano}>{ano}</option>
                 ))}
               </Form.Select>
             </Col>
           </Row>
-        </Form.Group>
+        </FormGroup>
 
-        <Form.Group className="mb-3">
+        <FormGroup>
           <Form.Label>Informações de Login</Form.Label>
           <Form.Control type="email" placeholder="Email" className="mb-2" />
           <Form.Control type="password" placeholder="Senha" className="mb-2" />
-        </Form.Group>
+        </FormGroup>
 
-        <Button variant="primary" type="submit">
+        <StyledButton variant="primary" type="submit">
           Cadastrar
-        </Button>
-      </Form>
+        </StyledButton>
+      </StyledForm>
     </Container>
   );
 }

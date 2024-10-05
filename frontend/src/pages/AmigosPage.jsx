@@ -3,116 +3,14 @@ import Layout from '../layout/Layout';
 import { Container, Row, Col, Card, Form, InputGroup, Button, ListGroup, Image } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faUserPlus, faUserMinus, faEnvelope, faHome, faUser, faGlobeAmericas, faUsers, faBars } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
+import { GradientBackground, StyledCard, StyledButton, FriendItem, IconWrapper, GradientText, SidebarWrapper, Overlay } from '../styles/AmigosStyle';
 import { useTheme } from '../context/ContextTheme';
-
-const GradientBackground = styled.div`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  min-height: 100vh;
-  padding: 20px 0;
-`;
-
-const StyledCard = styled(Card)`
-  border-radius: 20px;
-  border: none;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: #ffffff;
-  overflow: hidden;
-`;
-
-const StyledButton = styled(Button)`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  color: #ffffff;
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.secondaryColor}, ${props.theme.primaryColor})`};
-  }
-`;
-
-const FriendItem = styled(Card)`
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  transition: all 0.3s ease;
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
-  }
-`;
-
-const IconWrapper = styled.div`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-`;
-
-const GradientText = styled.span`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-`;
-
-const SidebarWrapper = styled.div`
-  @media (max-width: 991px) {
-    position: fixed;
-    top: 0;
-    left: ${props => props.show ? '0' : '-50%'};
-    width: 50%;
-    height: 100vh;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(255,255,255,0.18);
-    transition: left 0.3s ease-in-out;
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-  }
-`;
-
-const Overlay = styled.div`
-  @media (max-width: 991px) {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: ${props => props.show ? 'block' : 'none'};
-    z-index: 999;
-  }
-`;
+import { mockFriends } from '../utils/Amigos';
 
 function AmigosPage() {
   const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [showSidebar, setShowSidebar] = useState(false);
-
-  const mockFriends = [
-    { id: 1, name: 'Naruto Uzumaki', image: 'https://picsum.photos/50/50?random=1', isFriend: true },
-    { id: 2, name: 'Sasuke Uchiha', image: 'https://picsum.photos/50/50?random=2', isFriend: true },
-    { id: 3, name: 'Sakura Haruno', image: 'https://picsum.photos/50/50?random=3', isFriend: false },
-    { id: 4, name: 'Kakashi Hatake', image: 'https://picsum.photos/50/50?random=4', isFriend: true },
-    { id: 5, name: 'Hinata Hyuga', image: 'https://picsum.photos/50/50?random=5', isFriend: false },
-    { id: 6, name: 'Shikamaru Nara', image: 'https://picsum.photos/50/50?random=6', isFriend: true },
-  ];
 
   const filteredFriends = mockFriends.filter(friend =>
     friend.name.toLowerCase().includes(searchTerm.toLowerCase())

@@ -1,22 +1,19 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { StyledCard, NewsItem } from '../styles/UltimasNoticiasStyle';
+import { getNoticias } from '../utils/UltimasNoticiasUtil';
 
-function UltimasNoticiasComp() {
-  const noticias = [
-    { id: 1, title: 'Notícia 1', source: 'Fonte 1' },
-    { id: 2, title: 'Notícia 2', source: 'Fonte 2' },
-    { id: 3, title: 'Notícia 3', source: 'Fonte 3' },
-  ];
+function UltimasNoticiasComp({ theme }) {
+  const noticias = getNoticias();
 
   return (
     <StyledCard>
       <Card.Body>
-        <Card.Title>Últimas Notícias</Card.Title>
+        <Card.Title style={{color: theme.highlightColor}}>Últimas Notícias</Card.Title>
         {noticias.map((noticia) => (
           <NewsItem key={noticia.id}>
             <h6>{noticia.title}</h6>
-            <small>{noticia.source}</small>
+            <small style={{color: theme.secondaryHighlightColor}}>{noticia.time}</small>
           </NewsItem>
         ))}
       </Card.Body>

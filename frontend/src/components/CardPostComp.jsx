@@ -1,76 +1,125 @@
 import React, { useState } from 'react';
-import { Card, Image } from 'react-bootstrap';
+import { Card, Image, Form, Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
-import { useTheme } from '../context/ContextTheme';
-import { StyledCard, PostImage, ActionButton, LikeCount, CommentSection, CommentInput } from '../styles/CardPostStyle';
+import { CartaoEstilizado, ImagemPost, BotaoAcao, ContagemCurtidas, SecaoComentarios, EntradaComentario, ItemComentario, ImagemPerfilComentario, BotaoMostrarMais } from '../styles/CardPostStyle';
+import { formatarContagemCurtidas, obterTempoDecorrido } from '../utils/CardPostUtil';
 
-function CardPostComp({ post }) {
-  const { theme } = useTheme();
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(post.likes);
-  const [showComments, setShowComments] = useState(false);
-  const [newComment, setNewComment] = useState('');
+function CardPostComp({ post, theme }) {
+  const [curtido, setCurtido] = useState(false);
+  const [contagemCurtidas, setContagemCurtidas] = useState(post.curtidas);
+  const [mostrarComentarios, setMostrarComentarios] = useState(false);
+  const [novoComentario, setNovoComentario] = useState('');
+  const [comentariosVisiveis, setComentariosVisiveis] = useState(2);
+  const [mostrarModalComentarios, setMostrarModalComentarios] = useState(false);
 
-  const handleLike = () => {
-    if (liked) {
-      setLikeCount(likeCount - 1);
+  const lidarComCurtida = () => {
+    if (curtido) {
+      setContagemCurtidas(contagemCurtidas - 1);
     } else {
-      setLikeCount(likeCount + 1);
+      setContagemCurtidas(contagemCurtidas + 1);
     }
-    setLiked(!liked);
+    setCurtido(!curtido);
   };
 
-  const handleAddComment = (e) => {
+  const lidarComAdicionarComentario = (e) => {
     e.preventDefault();
-    if (newComment.trim() !== '') {
-      // Adicionar novo comentário à lista de comentários
-      setNewComment('');
+    if (novoComentario.trim() !== '') {
+      if (!Array.isArray(post.comentarios)) {
+        post.comentarios = [];
+      }
+      post.comentarios.push({
+        autor: 'Usuário Atual',
+        imagemPerfil: 'https://example.com/usuario-atual.jpg',
+        conteudo: novoComentario,
+        timestamp: new Date(),
+        curtidas: 0,
+        comentarios: []
+      });
+      setNovoComentario('');
     }
   };
+
+  const mostrarMaisComentarios = () => {
+    if (post.comentarios.length > 10) {
+      setMostrarModalComentarios(true);
+    } else {
+      setComentariosVisiveis(comentariosVisiveis + 2);
+    }
+  };
+
+  const renderizarComentario = (comentario, index) => (
+    <ItemComentario key={index}>
+      <div className="d-flex align-items-center">
+        <ImagemPerfilComentario src={comentario.imagemPerfil} alt={comentario.autor} />
+        <div>
+          <strong>{comentario.autor}</strong>: {comentario.conteudo}
+          <small className="text-muted d-block">{obterTempoDecorrido(comentario.timestamp)}</small>
+        </div>
+      </div>
+      <div className="mt-2">
+        <BotaoAcao onClick={() => {}/* Implementar curtida de comentário */} theme={theme}>
+          <FontAwesomeIcon icon={faHeart} /> {formatarContagemCurtidas(comentario.curtidas)}
+        </BotaoAcao>
+        <BotaoAcao onClick={() => {}/* Implementar resposta ao comentário */} theme={theme}>
+          <FontAwesomeIcon icon={faComment} /> {comentario.comentarios.length}
+        </BotaoAcao>
+      </div>
+    </ItemComentario>
+  );
 
   return (
-    <StyledCard>
+    <CartaoEstilizado>
       <Card.Body>
         <div className="d-flex align-items-center mb-3">
-          <Image src={post.authorImage} roundedCircle style={{ width: '50px', height: '50px', marginRight: '15px' }} />
+          <Image src={post.imagemAutor} roundedCircle style={{width: '50px', height: '50px', marginRight: '10px'}} />
           <div>
-            <h6 className="mb-0">{post.author}</h6>
-            <small className="text-muted">{post.timestamp}</small>
+            <h6 className="mb-0">{post.autor}</h6>
+            <small>{obterTempoDecorrido(post.timestamp)}</small>
           </div>
         </div>
-        <Card.Text>{post.content}</Card.Text>
-        {post.image && <PostImage src={post.image} alt="Post" />}
+        <Card.Text>{post.conteudo}</Card.Text>
+        {post.imagem && <ImagemPost src={post.imagem} alt="Post" />}
         <div className="d-flex justify-content-between align-items-center mt-3">
-          <ActionButton onClick={handleLike} active={liked} theme={theme}>
-            <FontAwesomeIcon icon={faHeart} /> <LikeCount>{likeCount}</LikeCount>
-          </ActionButton>
-          <ActionButton onClick={() => setShowComments(!showComments)} theme={theme}>
-            <FontAwesomeIcon icon={faComment} /> {post.comments.length}
-          </ActionButton>
-          <ActionButton theme={theme}>
-            <FontAwesomeIcon icon={faShare} /> Share
-          </ActionButton>
+          <BotaoAcao onClick={lidarComCurtida} $ativo={curtido} theme={theme}>
+            <FontAwesomeIcon icon={faHeart} /> <ContagemCurtidas>{formatarContagemCurtidas(contagemCurtidas)}</ContagemCurtidas>
+          </BotaoAcao>
+          <BotaoAcao onClick={() => setMostrarComentarios(!mostrarComentarios)} theme={theme}>
+            <FontAwesomeIcon icon={faComment} /> {Array.isArray(post.comentarios) ? post.comentarios.length : 0}
+          </BotaoAcao>
+          <BotaoAcao theme={theme}>
+            <FontAwesomeIcon icon={faShare} /> Compartilhar
+          </BotaoAcao>
         </div>
-        {showComments && (
-          <CommentSection>
-            {post.comments.map((comment, index) => (
-              <div key={index} className="mb-2">
-                <strong>{comment.author}</strong>: {comment.content}
-              </div>
-            ))}
-            <form onSubmit={handleAddComment}>
-              <CommentInput
+        {mostrarComentarios && (
+          <SecaoComentarios>
+            {Array.isArray(post.comentarios) && post.comentarios.slice(0, comentariosVisiveis).map(renderizarComentario)}
+            {Array.isArray(post.comentarios) && post.comentarios.length > comentariosVisiveis && (
+              <BotaoMostrarMais onClick={mostrarMaisComentarios}>
+                Mostrar mais comentários
+              </BotaoMostrarMais>
+            )}
+            <Form onSubmit={lidarComAdicionarComentario}>
+              <EntradaComentario
                 type="text"
-                placeholder="Add a comment..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Adicione um comentário..."
+                value={novoComentario}
+                onChange={(e) => setNovoComentario(e.target.value)}
               />
-            </form>
-          </CommentSection>
+              <Button type="submit" variant="primary" size="sm" className="mt-2">Comentar</Button>
+            </Form>
+          </SecaoComentarios>
         )}
       </Card.Body>
-    </StyledCard>
+      <Modal show={mostrarModalComentarios} onHide={() => setMostrarModalComentarios(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Todos os comentários</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {Array.isArray(post.comentarios) && post.comentarios.map(renderizarComentario)}
+        </Modal.Body>
+      </Modal>
+    </CartaoEstilizado>
   );
 }
 

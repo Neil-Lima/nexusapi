@@ -1,246 +1,27 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Layout from '../layout/Layout';
-import { Container, Row, Col, Card, Button, Form, ListGroup, Modal, InputGroup, Image } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, ListGroup, Modal, InputGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faMapMarkerAlt, faClock, faUsers, faHeart, faComment, faShare, faHome, faUser, faGlobeAmericas, faBars, faPlus, faImage, faSearch } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
 import { useTheme } from '../context/ContextTheme';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-
-const GradientBackground = styled.div`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  min-height: 100vh;
-  padding: 20px 0;
-`;
-
-const StyledCard = styled(Card)`
-  border-radius: 20px;
-  border: none;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: #ffffff;
-  overflow: hidden;
-  margin-bottom: 20px;
-`;
-
-const StyledButton = styled(Button)`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  color: #ffffff;
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.secondaryColor}, ${props.theme.primaryColor})`};
-  }
-`;
-
-const IconWrapper = styled.div`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-`;
-
-const GradientText = styled.span`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-`;
-
-const SidebarWrapper = styled.div`
-  @media (max-width: 991px) {
-    position: fixed;
-    top: 0;
-    left: ${props => props.show ? '0' : '-50%'};
-    width: 50%;
-    height: 100vh;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(255,255,255,0.18);
-    transition: left 0.3s ease-in-out;
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-  }
-`;
-
-const Overlay = styled.div`
-  @media (max-width: 991px) {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: ${props => props.show ? 'block' : 'none'};
-    z-index: 999;
-  }
-`;
-
-const EventImage = styled(Image)`
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 20px 20px 0 0;
-`;
-
-const StyledModal = styled(Modal)`
-  .modal-content {
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 20px;
-    color: #ffffff;
-  }
-
-  .modal-header {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .modal-footer {
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .form-control, .form-select {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #ffffff;
-
-    &:focus {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      box-shadow: none;
-    }
-  }
-
-  .react-datepicker-wrapper {
-    width: 100%;
-  }
-
-  .react-datepicker__input-container input {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #ffffff;
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.25rem;
-
-    &:focus {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      box-shadow: none;
-    }
-  }
-`;
+import { GradientBackground, StyledCard, StyledButton, IconWrapper, GradientText, SidebarWrapper, Overlay, EventImage, StyledModal } from '../styles/EventosStyle';
+import { handleCreateEvent, handleInputChange, handleDateChange, handleImageUpload, toggleSidebar, initialEvents, initialNewEvent } from '../utils/EventosUtil';
 
 function EventosPage() {
   const { theme } = useTheme();
   const [showSidebar, setShowSidebar] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    date: new Date(),
-    time: '',
-    location: '',
-    description: '',
-    image: null
-  });
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: 'Festival de Música',
-      date: '2023-07-15',
-      time: '18:00',
-      location: 'Parque Central',
-      attendees: 500,
-      likes: 250,
-      comments: 45,
-      shares: 30,
-      image: 'https://picsum.photos/800/400?random=1'
-    },
-    {
-      id: 2,
-      title: 'Exposição de Arte',
-      date: '2023-07-22',
-      time: '10:00',
-      location: 'Galeria Municipal',
-      attendees: 200,
-      likes: 180,
-      comments: 35,
-      shares: 25,
-      image: 'https://picsum.photos/800/400?random=2'
-    },
-    {
-      id: 3,
-      title: 'Maratona da Cidade',
-      date: '2023-08-05',
-      time: '07:00',
-      location: 'Centro da Cidade',
-      attendees: 1000,
-      likes: 450,
-      comments: 80,
-      shares: 60,
-      image: 'https://picsum.photos/800/400?random=3'
-    }
-  ]);
+  const [newEvent, setNewEvent] = useState(initialNewEvent);
+  const [events, setEvents] = useState(initialEvents);
 
   const fileInputRef = useRef(null);
 
-  const toggleSidebar = () => setShowSidebar(!showSidebar);
-
-  const handleCreateEvent = (event) => {
-    event.preventDefault();
-    const newEventWithId = { 
-      ...newEvent, 
-      id: events.length + 1,
-      image: newEvent.image ? URL.createObjectURL(newEvent.image) : null,
-      attendees: 0,
-      likes: 0,
-      comments: 0,
-      shares: 0
-    };
-    setEvents([...events, newEventWithId]);
-    setShowModal(false);
-    setNewEvent({
-      title: '',
-      date: new Date(),
-      time: '',
-      location: '',
-      description: '',
-      image: null
-    });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewEvent({ ...newEvent, [name]: value });
-  };
-
-  const handleDateChange = (date) => {
-    setNewEvent({ ...newEvent, date });
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    setNewEvent({ ...newEvent, image: file });
-  };
+  useEffect(() => {
+    // Efeitos colaterais, se necessário
+  }, []);
 
   const filteredEvents = events.filter(event =>
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -283,14 +64,14 @@ function EventosPage() {
       <GradientBackground theme={theme}>
         <Container>
           <Row>
-            <Overlay show={showSidebar} onClick={toggleSidebar} />
+            <Overlay show={showSidebar} onClick={() => toggleSidebar(setShowSidebar)} />
             <Col lg={3}>
               <SidebarWrapper show={showSidebar}>
                 <LeftColumn theme={theme} />
               </SidebarWrapper>
             </Col>
             <Col lg={9}>
-              <StyledButton className="d-lg-none mb-3" onClick={toggleSidebar} theme={theme}>
+              <StyledButton className="d-lg-none mb-3" onClick={() => toggleSidebar(setShowSidebar)} theme={theme}>
                 <FontAwesomeIcon icon={faBars} />
               </StyledButton>
               <StyledCard>
@@ -359,7 +140,7 @@ function EventosPage() {
             <Modal.Title>Criar Novo Evento</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form onSubmit={handleCreateEvent}>
+            <Form onSubmit={(e) => handleCreateEvent(e, newEvent, events, setEvents, setShowModal, setNewEvent)}>
               <Form.Group className="mb-3">
                 <Form.Label>Título do Evento</Form.Label>
                 <Form.Control
@@ -367,7 +148,7 @@ function EventosPage() {
                   placeholder="Digite o título do evento"
                   name="title"
                   value={newEvent.title}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e, setNewEvent)}
                   required
                 />
               </Form.Group>
@@ -375,7 +156,7 @@ function EventosPage() {
                 <Form.Label>Data</Form.Label>
                 <DatePicker
                   selected={newEvent.date}
-                  onChange={handleDateChange}
+                  onChange={(date) => handleDateChange(date, setNewEvent)}
                   dateFormat="dd/MM/yyyy"
                   className="form-control"
                   required
@@ -387,7 +168,7 @@ function EventosPage() {
                   type="time"
                   name="time"
                   value={newEvent.time}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e, setNewEvent)}
                   required
                 />
               </Form.Group>
@@ -398,7 +179,7 @@ function EventosPage() {
                   placeholder="Digite o local do evento"
                   name="location"
                   value={newEvent.location}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e, setNewEvent)}
                   required
                 />
               </Form.Group>
@@ -410,7 +191,7 @@ function EventosPage() {
                   placeholder="Descreva o evento"
                   name="description"
                   value={newEvent.description}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e, setNewEvent)}
                   required
                 />
               </Form.Group>
@@ -419,7 +200,7 @@ function EventosPage() {
                 <Form.Control
                   type="file"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={(e) => handleImageUpload(e, setNewEvent)}
                   ref={fileInputRef}
                   required
                 />

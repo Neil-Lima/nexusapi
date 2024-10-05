@@ -1,121 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Layout from '../layout/Layout';
-import { Container, Row, Col, Form, ProgressBar, Tabs, Tab, Dropdown, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Form, Tabs, Tab, Dropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload, faCut, faClosedCaptioning, faPalette, faShare, faPlus, faMinus, faUndo, faRedo, faBold, faItalic, faUnderline, faAlignLeft, faAlignCenter, faAlignRight } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
 import { useTheme } from '../context/ContextTheme';
-import { motion } from 'framer-motion';
 import { SketchPicker } from 'react-color';
-
-const GradientBackground = styled.div`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  min-height: 100vh;
-  padding: 20px 0;
-`;
-
-const StudioCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-`;
-
-const StyledButton = styled.button`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 5px;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  }
-`;
-
-const VideoPreview = styled.video`
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
-`;
-
-const StyledTabs = styled(Tabs)`
-  .nav-link {
-    color: white;
-    &.active {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-color: transparent;
-    }
-  }
-`;
-
-const StyledForm = styled(Form)`
-  .form-control {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-  }
-`;
-
-const EditingTools = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-`;
-
-const TimelineContainer = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  height: 100px;
-  margin-top: 20px;
-`;
-
-const CaptionContainer = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 20px;
-  margin-top: 20px;
-`;
-
-const CustomizationContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-`;
-
-const StyledDropdown = styled(Dropdown)`
-  .dropdown-toggle {
-    background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-    border: none;
-    border-radius: 25px;
-    padding: 10px 20px;
-    color: white;
-    font-weight: bold;
-  }
-
-  .dropdown-menu {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-  }
-
-  .dropdown-item {
-    color: white;
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-  }
-`;
+import { GradientBackground, StudioCard, StyledButton, VideoPreview, StyledTabs, StyledForm, EditingTools, TimelineContainer, CaptionContainer, CustomizationContainer, StyledDropdown } from '../styles/VideoStudioStyle';
+import { handleFileChange, handleUpload, handleTrimVideo, handleAddCaption, handleCaptionChange, handleCustomizationChange } from '../utils/VideoStudioUtil';
 
 function VideoStudioPage() {
   const { theme } = useTheme();
@@ -130,44 +21,6 @@ function VideoStudioPage() {
     titleSize: 24,
   });
   const videoRef = useRef(null);
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setVideoFile(file);
-    const videoUrl = URL.createObjectURL(file);
-    if (videoRef.current) {
-      videoRef.current.src = videoUrl;
-    }
-  };
-
-  const handleUpload = () => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      setUploadProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-      }
-    }, 500);
-  };
-
-  const handleTrimVideo = () => {
-    console.log('Trimming video...');
-  };
-
-  const handleAddCaption = () => {
-    setCaptions([...captions, { startTime: 0, endTime: 5, text: 'New caption' }]);
-  };
-
-  const handleCaptionChange = (index, field, value) => {
-    const newCaptions = [...captions];
-    newCaptions[index][field] = value;
-    setCaptions(newCaptions);
-  };
-
-  const handleCustomizationChange = (field, value) => {
-    setCustomization({ ...customization, [field]: value });
-  };
 
   return (
     <Layout>
@@ -185,13 +38,12 @@ function VideoStudioPage() {
                   <Tab eventKey="upload" title={<><FontAwesomeIcon icon={faUpload} /> Upload</>}>
                     <Form.Group>
                       <Form.Label>Selecione o vídeo para upload</Form.Label>
-                      <Form.Control type="file" accept="video/*" onChange={handleFileChange} />
+                      <Form.Control type="file" accept="video/*" onChange={(e) => handleFileChange(e, setVideoFile, videoRef)} />
                     </Form.Group>
                     {videoFile && (
                       <>
                         <VideoPreview ref={videoRef} controls />
-                        <StyledButton onClick={handleUpload} theme={theme}>Iniciar Upload</StyledButton>
-                        <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />
+                        <StyledButton onClick={() => handleUpload(setUploadProgress)} theme={theme}>Iniciar Upload</StyledButton>
                       </>
                     )}
                   </Tab>
@@ -209,7 +61,7 @@ function VideoStudioPage() {
                     </TimelineContainer>
                   </Tab>
                   <Tab eventKey="captions" title={<><FontAwesomeIcon icon={faClosedCaptioning} /> Legendas</>}>
-                    <StyledButton onClick={handleAddCaption} theme={theme}>Adicionar Legenda</StyledButton>
+                    <StyledButton onClick={() => handleAddCaption(captions, setCaptions)} theme={theme}>Adicionar Legenda</StyledButton>
                     <CaptionContainer>
                       {captions.map((caption, index) => (
                         <div key={index}>
@@ -218,7 +70,7 @@ function VideoStudioPage() {
                             <Form.Control
                               type="number"
                               value={caption.startTime}
-                              onChange={(e) => handleCaptionChange(index, 'startTime', e.target.value)}
+                              onChange={(e) => handleCaptionChange(index, 'startTime', e.target.value, captions, setCaptions)}
                             />
                           </Form.Group>
                           <Form.Group>
@@ -226,7 +78,7 @@ function VideoStudioPage() {
                             <Form.Control
                               type="number"
                               value={caption.endTime}
-                              onChange={(e) => handleCaptionChange(index, 'endTime', e.target.value)}
+                              onChange={(e) => handleCaptionChange(index, 'endTime', e.target.value, captions, setCaptions)}
                             />
                           </Form.Group>
                           <Form.Group>
@@ -234,7 +86,7 @@ function VideoStudioPage() {
                             <Form.Control
                               as="textarea"
                               value={caption.text}
-                              onChange={(e) => handleCaptionChange(index, 'text', e.target.value)}
+                              onChange={(e) => handleCaptionChange(index, 'text', e.target.value, captions, setCaptions)}
                             />
                           </Form.Group>
                         </div>
@@ -247,7 +99,7 @@ function VideoStudioPage() {
                         <h4>Cor do Título</h4>
                         <SketchPicker
                           color={customization.titleColor}
-                          onChange={(color) => handleCustomizationChange('titleColor', color.hex)}
+                          onChange={(color) => handleCustomizationChange('titleColor', color.hex, customization, setCustomization)}
                         />
                       </div>
                       <div>
@@ -257,9 +109,9 @@ function VideoStudioPage() {
                             {customization.titleFont}
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => handleCustomizationChange('titleFont', 'Arial')}>Arial</Dropdown.Item>
-                            <Dropdown.Item onClick={() => handleCustomizationChange('titleFont', 'Helvetica')}>Helvetica</Dropdown.Item>
-                            <Dropdown.Item onClick={() => handleCustomizationChange('titleFont', 'Times New Roman')}>Times New Roman</Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleCustomizationChange('titleFont', 'Arial', customization, setCustomization)}>Arial</Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleCustomizationChange('titleFont', 'Helvetica', customization, setCustomization)}>Helvetica</Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleCustomizationChange('titleFont', 'Times New Roman', customization, setCustomization)}>Times New Roman</Dropdown.Item>
                           </Dropdown.Menu>
                         </StyledDropdown>
                       </div>
@@ -268,7 +120,7 @@ function VideoStudioPage() {
                         <Form.Control
                           type="number"
                           value={customization.titleSize}
-                          onChange={(e) => handleCustomizationChange('titleSize', e.target.value)}
+                          onChange={(e) => handleCustomizationChange('titleSize', e.target.value, customization, setCustomization)}
                         />
                       </div>
                     </CustomizationContainer>

@@ -3,84 +3,10 @@ import Layout from '../layout/Layout';
 import { Container, Row, Col, Card, Image, Button, ListGroup, Badge, Dropdown, Form, InputGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCheck, faTrash, faEllipsisV, faFilter, faHome, faUser, faGlobeAmericas, faUsers } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
 import { useTheme } from '../context/ContextTheme';
 import { format } from 'date-fns';
-
-const GradientBackground = styled.div`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  min-height: 100vh;
-  padding: 20px 0;
-`;
-
-const StyledCard = styled(Card)`
-  border-radius: 20px;
-  border: none;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: #ffffff;
-  overflow: hidden;
-`;
-
-const NotificationList = styled(ListGroup)`
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-  }
-`;
-
-const NotificationItem = styled(ListGroup.Item)`
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  transition: all 0.3s ease;
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-`;
-
-const StyledButton = styled(Button)`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  color: #ffffff;
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.secondaryColor}, ${props.theme.primaryColor})`};
-  }
-`;
-
-const IconWrapper = styled.div`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-`;
-
-const GradientText = styled.span`
-  background: ${props => `linear-gradient(${props.theme.gradientDirection}, ${props.theme.primaryColor}, ${props.theme.secondaryColor})`};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-`;
+import { GradientBackground, StyledCard, NotificationList, NotificationItem, StyledButton, IconWrapper, GradientText } from '../styles/NotificacoesStyle';
+import { fetchNotifications } from '../utils/NotificacoesUtil';
 
 function NotificacoesPage() {
   const { theme } = useTheme();
@@ -88,15 +14,7 @@ function NotificacoesPage() {
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    // Simulating API call to fetch notifications
-    const fetchedNotifications = [
-      { id: 1, type: 'like', user: 'Alice Johnson', content: 'liked your post', time: '2023-05-20T10:30:00', read: false },
-      { id: 2, type: 'comment', user: 'Bob Smith', content: 'commented on your photo', time: '2023-05-19T15:45:00', read: true },
-      { id: 3, type: 'friend', user: 'Carol Williams', content: 'sent you a friend request', time: '2023-05-18T09:20:00', read: false },
-      { id: 4, type: 'mention', user: 'David Brown', content: 'mentioned you in a comment', time: '2023-05-17T14:10:00', read: true },
-      { id: 5, type: 'event', user: 'Event Organizer', content: 'invited you to an event', time: '2023-05-16T11:55:00', read: false },
-    ];
-    setNotifications(fetchedNotifications);
+    setNotifications(fetchNotifications());
   }, []);
 
   const handleMarkAsRead = (id) => {
@@ -238,4 +156,3 @@ function NotificacoesPage() {
 }
 
 export default NotificacoesPage;
-                    
