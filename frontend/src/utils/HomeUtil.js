@@ -3,17 +3,52 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faUser, faGlobeAmericas, faUsers, faImage, faVideo, faSmile, faStar, faComment, faShareAlt, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { ListGroup, Card, Image } from 'react-bootstrap';
 import { StyledCard, IconWrapper, GradientText, StyledButton, StoryItem } from '../styles/HomeStyles';
+import api from '../api/api';
 
-export const LeftColumn = ({ theme }) => (
+export const initializeSession = async (setUserData, fetchPosts, navigate) => {
+  try {
+    const response = await api.get('/user');
+    setUserData(response.data);
+    fetchPosts();
+  } catch (error) {
+    console.error('Error initializing session:', error);
+    navigate('/');
+  }
+};
+
+export const fetchPosts = async (setPosts, setLoading) => {
+  setLoading(true);
+  try {
+    const response = await api.get('/posts');
+    setPosts(response.data);
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
+  setLoading(false);
+};
+
+export const loadMorePosts = async (posts, setPosts, setLoading) => {
+  setLoading(true);
+  try {
+    const lastPostId = posts[posts.length - 1].id;
+    const response = await api.get(`/posts?after=${lastPostId}`);
+    setPosts([...posts, ...response.data]);
+  } catch (error) {
+    console.error('Error loading more posts:', error);
+  }
+  setLoading(false);
+};
+
+export const LeftColumn = ({ theme, userData }) => (
   <>
     <StyledCard theme={theme} className="text-center">
-      <Card.Img variant="top" src="https://3.bp.blogspot.com/-SKgOrjUtWhE/UY2-87zw1PI/AAAAAAAAAH4/oSSr-Zh-6-8/s1600/Madara+Uchiha.jpg" style={{borderRadius: '20px 20px 0 0'}} />
+      <Card.Img variant="top" src={userData?.coverImage || "https://via.placeholder.com/500x200"} style={{borderRadius: '20px 20px 0 0'}} />
       <Card.Body>
         <Card.Title style={{fontSize: '24px', fontWeight: 'bold'}}>
-          <GradientText theme={theme}>Madara Uchiha</GradientText>
+          <GradientText theme={theme}>{userData?.name || 'User Name'}</GradientText>
         </Card.Title>
         <Card.Text>
-          Líder do <a href="#" style={{color: theme.highlightColor}}>clã Uchiha</a>, fundador da aldeia da folha, segundo sábio dos seis caminhos.
+          {userData?.bio || 'User bio goes here'}
         </Card.Text>
       </Card.Body>
     </StyledCard>

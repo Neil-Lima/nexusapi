@@ -1,0 +1,26 @@
+Para o desenvolvimento da rede social, utilizaremos diversas bibliotecas tanto no React quanto no Laravel. Aqui estão as principais:
+
+React:
+
+React Router - para gerenciamento de rotas
+Redux ou Context API - para gerenciamento de estado global
+Axios - para requisições HTTP
+Styled-components - para estilização com CSS-in-JS
+React-bootstrap - para componentes de UI pré-estilizados
+Socket.io-client - para comunicação em tempo real
+React-query - para gerenciamento de estado do servidor e caching
+Formik - para gerenciamento de formulários
+Yup - para validação de formulários
+React-icons - para ícones
+
+Laravel:
+Laravel Sanctum - para autenticação de API
+Laravel Socialite - para autenticação via redes sociais
+Laravel Echo - para broadcasting em tempo real
+Laravel Passport - para OAuth2 server
+Intervention Image - para manipulação de imagens
+Laravel Debugbar - para debugging
+Laravel Horizon - para monitoramento de filas
+Laravel Telescope - para debugging e monitoramento
+Spatie/laravel-permission - para gerenciamento de permissões
+Laravel Scout - para busca full-text

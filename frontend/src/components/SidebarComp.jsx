@@ -2,22 +2,22 @@ import React from 'react';
 import { Card, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SidebarWrapper, StyledCard, IconWrapper, StyledListGroup } from './SidebarStyle';
-import { sidebarItems } from './SidebarUtil';
+import { sidebarItems } from '../utils/SidebarUtil';
 import { useTheme } from '../context/ContextTheme';
 
-function SidebarComp({ show }) {
+function SidebarComp({ show, userData }) {
   const { theme } = useTheme();
 
   return (
     <SidebarWrapper show={show}>
       <StyledCard className="text-center">
-        <Card.Img variant="top" src="https://3.bp.blogspot.com/-SKgOrjUtWhE/UY2-87zw1PI/AAAAAAAAAH4/oSSr-Zh-6-8/s1600/Madara+Uchiha.jpg" style={{borderRadius: '20px 20px 0 0'}} />
+        <Card.Img variant="top" src={userData?.coverImage || "https://via.placeholder.com/500x200"} style={{borderRadius: '20px 20px 0 0'}} />
         <Card.Body>
           <Card.Title style={{fontSize: '24px', fontWeight: 'bold'}}>
-            <span>Madara Uchiha</span>
+            <span>{userData?.name || 'User Name'}</span>
           </Card.Title>
           <Card.Text>
-            Líder do <a href="#" style={{color: '#FF0080'}}>clã Uchiha</a>, fundador da aldeia da folha, segundo sábio dos seis caminhos.
+            {userData?.bio || 'User bio goes here'}
           </Card.Text>
         </Card.Body>
       </StyledCard>

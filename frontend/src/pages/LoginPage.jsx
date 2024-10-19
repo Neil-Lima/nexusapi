@@ -1,13 +1,29 @@
-import React, { useState } from 'react';
-import { Card, Form, Button, Modal, Container, Row, Col } from 'react-bootstrap';
-import { RiLoginBoxLine, RiLockPasswordLine, RiMailLine, RiUserLine, RiCalendarLine } from 'react-icons/ri';
+import React from 'react';
+import { Card, Form, Button, Modal, Container, Row, Col, Image } from 'react-bootstrap';
+import { RiLoginBoxLine, RiLockPasswordLine, RiMailLine, RiUserLine, RiCalendarLine, RiMapPinLine, RiImageAddLine, RiImageEditLine } from 'react-icons/ri';
 import { useTheme } from '../context/ContextTheme';
-import { GradientBackground, StyledCard, StyledButton, GradientText, StyledModal, StyledFormControl, StyledFormSelect, StyledFormLabel } from '../styles/LoginStyle';
-import { handleModalClose, handleModalShow, handleLogin, handleSignup, anos, meses, dias } from '../utils/LoginUtil';
+import { GradientBackground, StyledCard, StyledButton, GradientText, StyledModal, StyledFormControl, StyledFormSelect, StyledFormLabel, ProfileImageWrapper, CoverImageWrapper, ImagePreviewContainer } from '../styles/LoginStyle';
+import { useLoginForm, anos, meses, dias } from '../utils/LoginUtil';
 
 function LoginPage() {
-  const [showModal, setShowModal] = useState(false);
   const { theme } = useTheme();
+  const {
+    showModal,
+    profileImage,
+    coverImage,
+    handleModalClose,
+    handleModalShow,
+    handleLoginSubmit,
+    handleSignupSubmit,
+    handleImageUpload,
+    setProfileImage,
+    setCoverImage,
+    isLoading,
+    error,
+    showResultModal,
+    setShowResultModal,
+    resultModalContent
+  } = useLoginForm();
 
   return (
     <GradientBackground theme={theme}>
@@ -20,7 +36,7 @@ function LoginPage() {
                   <RiLoginBoxLine size={50} style={{color: theme.primaryColor}} />
                   <h2 className="mt-3 font-weight-bold"><GradientText theme={theme}>Login</GradientText></h2>
                 </div>
-                <Form className="text-center" onSubmit={handleLogin}>
+                <Form className="text-center" onSubmit={handleLoginSubmit}>
                   <Form.Group className="mb-4">
                     <div className="input-group">
                       <span className="input-group-text" style={{background: `linear-gradient(${theme.gradientDirection}, ${theme.primaryColor}, ${theme.secondaryColor})`, color: 'white'}}>
@@ -46,7 +62,7 @@ function LoginPage() {
                 </Form>
               </Card.Body>
               <Card.Footer className="bg-transparent text-center border-0 py-3">
-                <StyledButton variant="outline-primary" onClick={() => handleModalShow(setShowModal)} theme={theme}>
+                <StyledButton variant="outline-primary" onClick={handleModalShow} theme={theme}>
                   Criar nova conta
                 </StyledButton>
               </Card.Footer>
@@ -54,13 +70,45 @@ function LoginPage() {
           </Col>
         </Row>
 
-        <StyledModal show={showModal} onHide={() => handleModalClose(setShowModal)} size="lg" theme={theme}>
+        <StyledModal show={showModal} onHide={handleModalClose} size="lg" theme={theme}>
           <Modal.Header closeButton>
             <Modal.Title><GradientText theme={theme}>Cadastre-se</GradientText></Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Container>
-              <Form onSubmit={handleSignup}>
+              <Form onSubmit={handleSignupSubmit}>
+                <ImagePreviewContainer>
+                  <CoverImageWrapper>
+                    <Image src={coverImage || '/default_cover.jpg'} fluid />
+                    <Form.Group>
+                      <StyledButton as="label" htmlFor="coverImageUpload" theme={theme}>
+                        <RiImageAddLine />
+                      </StyledButton>
+                      <Form.Control
+                        id="coverImageUpload"
+                        type="file"
+                        onChange={(event) => handleImageUpload(event, setCoverImage)}
+                        accept="image/*"
+                        hidden
+                      />
+                    </Form.Group>
+                  </CoverImageWrapper>
+                  <ProfileImageWrapper>
+                    <Image src={profileImage || '/default_profile.jpg'} roundedCircle />
+                    <Form.Group>
+                      <StyledButton as="label" htmlFor="profileImageUpload" theme={theme}>
+                        <RiImageEditLine />
+                      </StyledButton>
+                      <Form.Control
+                        id="profileImageUpload"
+                        type="file"
+                        onChange={(event) => handleImageUpload(event, setProfileImage)}
+                        accept="image/*"
+                        hidden
+                      />
+                    </Form.Group>
+                  </ProfileImageWrapper>
+                </ImagePreviewContainer>
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
@@ -103,6 +151,26 @@ function LoginPage() {
                     <StyledFormControl type="password" name="senha" placeholder="Sua senha" required theme={theme} />
                   </div>
                 </Form.Group>
+                <Row>
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <StyledFormLabel theme={theme}>País</StyledFormLabel>
+                      <StyledFormControl type="text" name="pais" placeholder="Seu país" required theme={theme} />
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <StyledFormLabel theme={theme}>Estado</StyledFormLabel>
+                      <StyledFormControl type="text" name="estado" placeholder="Seu estado" required theme={theme} />
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                    <StyledFormLabel theme={theme}>Cidade</StyledFormLabel>
+                      <StyledFormControl type="text" name="cidade" placeholder="Sua cidade" required theme={theme} />
+                    </Form.Group>
+                  </Col>
+                </Row>
                 <Form.Group className="mb-3">
                   <StyledFormLabel theme={theme}>Data de Nascimento</StyledFormLabel>
                   <Row>
@@ -162,6 +230,18 @@ function LoginPage() {
             </Container>
           </Modal.Body>
         </StyledModal>
+
+        <Modal show={showResultModal} onHide={() => setShowResultModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>{resultModalContent.title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{resultModalContent.message}</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowResultModal(false)}>
+              Fechar
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Container>
     </GradientBackground>
   );

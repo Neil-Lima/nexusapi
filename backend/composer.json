@@ -7,14 +7,22 @@
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
+        "intervention/image": "^2.7",
+        "jenssegers/mongodb": "^3.9",
         "laravel/framework": "^9.19",
-        "laravel/sanctum": "^3.0",
+        "laravel/horizon": "5.9",
+        "laravel/passport": "10.4",
+        "laravel/sanctum": "^3.3",
+        "laravel/scout": "^10.11",
+        "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.7"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.14",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.0.1",
+        "laravel/telescope": "^5.2",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",
